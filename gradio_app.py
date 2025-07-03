@@ -88,100 +88,66 @@ def copy_to_clipboard(text):
 
 # --- Custom HTML/JS/CSS for animated background and chips ---
 custom_html = '''
-<!-- Tailwind CSS CDN -->
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 <style>
 body {
-  background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%) !important;
+  background: linear-gradient(135deg, #e0f3ff 0%, #b3e0ff 100%) !important;
   min-height: 100vh;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
+  color: #22577a !important;
 }
-.glow-overlay {
-  --glow-size: 25rem;
-  --glow-color: #7c3aed;
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  user-select: none;
-  opacity: var(--glow-opacity, 0);
-  mask: radial-gradient(
-    var(--glow-size) var(--glow-size) at var(--glow-x, 50vw) var(--glow-y, 50vh),
-    var(--glow-color) 1%,
-    transparent 50%
-  );
-  transition: 400ms mask ease, opacity 0.3s;
-  will-change: mask;
-  z-index: 2;
+.gradio-container, .gr-block, .gr-block * {
+  color: #22577a !important;
+}
+.gr-block, .gr-panel, .gr-column, .gr-row {
+  background: #fff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 2px 16px rgba(67,164,224,0.10) !important;
+  padding: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+}
+.gr-button, button, .copy-btn {
+  background: #2563eb !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(67,164,224,0.10) !important;
+  border: none !important;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.gr-button:hover, button:hover, .copy-btn:hover {
+  background: #43a4e0 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(67,164,224,0.15) !important;
+}
+input, select, textarea {
+  border: 1.5px solid #43a4e0 !important;
+  border-radius: 8px !important;
+  padding: 0.5em 1em !important;
+  font-size: 1em !important;
+  background: #f0fdfa !important;
+  color: #22577a !important;
+  transition: border 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #2563eb !important;
+  outline: none !important;
 }
 .chip {
   display: inline-block;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(8px);
-  color: #22577a;
-  border-radius: 16px;
-  padding: 0.3rem 1rem;
-  margin: 0.2rem 0.3rem 0.2rem 0;
-  font-size: 1rem;
-  font-weight: 500;
-  box-shadow: 0 1px 8px rgba(67,164,224,0.10);
-  transition: background 0.3s, box-shadow 0.3s, transform 0.2s, opacity 0.3s;
+  background: #e0f3ff !important;
+  color: #22577a !important;
+  border-radius: 16px !important;
+  padding: 0.3rem 1rem !important;
+  margin: 0.2rem 0.3rem 0.2rem 0 !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
   opacity: 1;
   animation: chipIn 0.4s cubic-bezier(.4,2,.6,1) both;
-}
-.chip-remove {
-  margin-left: 0.5rem;
-  color: #43a4e0;
-  cursor: pointer;
-  font-weight: bold;
-  transition: color 0.2s, transform 0.2s;
-}
-.chip-remove:hover {
-  color: #22577a;
-  transform: scale(1.2);
 }
 @keyframes chipIn {
   0% { opacity: 0; transform: scale(0.7) translateY(10px);}
   100% { opacity: 1; transform: scale(1) translateY(0);}
-}
-.copied-feedback {
-  border: 2px solid #43a4e0 !important;
-  box-shadow: 0 0 0 2px #43a4e0 !important;
-  transition: border 0.2s, box-shadow 0.2s;
-}
-.copy-tooltip {
-  position: absolute;
-  background: #43a4e0;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 0.95em;
-  z-index: 100;
-  left: 50%;
-  transform: translateX(-50%);
-  top: -2.2em;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-.copied-feedback + .copy-tooltip {
-  opacity: 1;
-}
-.copy-btn {
-  min-width: 36px !important;
-  max-width: 44px !important;
-  padding: 0.2em 0.4em !important;
-  font-size: 1.2em !important;
-  height: 2.2em !important;
-  margin-left: 0.3em !important;
-  background: #e0f3ff !important;
-  color: #22577a !important;
-  border-radius: 8px !important;
-  border: 1px solid #43a4e0 !important;
-  box-shadow: none !important;
-  transition: background 0.2s, color 0.2s;
-}
-.copy-btn:hover {
-  background: #43a4e0 !important;
-  color: #fff !important;
 }
 </style>
 <div class="glow-overlay"></div>
@@ -197,6 +163,11 @@ document.addEventListener("DOMContentLoaded", function() {
   document.body.addEventListener("mouseleave", () => {
     overlay.style.setProperty("--glow-opacity", "0");
   });
+  setTimeout(() => {
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, strong, em, .gr-markdown, .prose, .gr-block, .gradio-container').forEach(el => {
+      el.style.color = "#22577a";
+    });
+  }, 1000);
 });
 </script>
 '''
