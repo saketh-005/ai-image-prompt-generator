@@ -260,7 +260,7 @@ def generate_image(prompt):
     image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
     return image
 
-with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
     gr.HTML(custom_html)
     with gr.Row():
         gr.Markdown("""# AI Image Prompt Generator 🎨\nCreate creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
