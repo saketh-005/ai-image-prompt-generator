@@ -183,7 +183,10 @@ body {
   background: #43a4e0 !important;
   color: #fff !important;
 }
-body, .gr-markdown, .prose, .gr-block.gr-markdown, .gr-block.gr-markdown * {
+.gradio-container, .gr-block, .gr-block *,
+body, .gr-markdown, .prose, .gr-block.gr-markdown, .gr-block.gr-markdown *,
+.gr-markdown h1, .gr-markdown h2, .gr-markdown h3, .gr-markdown h4, .gr-markdown h5, .gr-markdown h6, 
+.gr-markdown p, .gr-markdown li, .gr-markdown strong, .gr-markdown em {
   color: #222 !important;
 }
 </style>
