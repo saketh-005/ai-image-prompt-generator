@@ -89,7 +89,7 @@ def copy_to_clipboard(text):
 # --- Custom HTML/JS/CSS for animated background and chips ---
 custom_html = '''
 <!-- Tailwind CSS CDN -->
-<!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet"> -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 <style>
 body {
   background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%) !important;
@@ -183,12 +183,6 @@ body {
   background: #43a4e0 !important;
   color: #fff !important;
 }
-.gradio-container, .gr-block, .gr-block *,
-body, .gr-markdown, .prose, .gr-block.gr-markdown, .gr-block.gr-markdown *,
-.gr-markdown h1, .gr-markdown h2, .gr-markdown h3, .gr-markdown h4, .gr-markdown h5, .gr-markdown h6, 
-.gr-markdown p, .gr-markdown li, .gr-markdown strong, .gr-markdown em {
-  color: #222 !important;
-}
 </style>
 <div class="glow-overlay"></div>
 <script>
@@ -203,12 +197,6 @@ document.addEventListener("DOMContentLoaded", function() {
   document.body.addEventListener("mouseleave", () => {
     overlay.style.setProperty("--glow-opacity", "0");
   });
-  // Force inline color for all relevant elements after rendering
-  setTimeout(() => {
-    document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, strong, em, .gr-markdown, .prose, .gr-block, .gradio-container').forEach(el => {
-      el.style.color = "#222";
-    });
-  }, 1000);
 });
 </script>
 '''
@@ -266,7 +254,7 @@ def generate_image(prompt):
     image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
     return image
 
-with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
+with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }", theme=gr.themes.Soft()) as demo:
     gr.HTML(custom_html)
     with gr.Row():
         gr.Markdown("""# AI Image Prompt Generator 🎨\nCreate creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
@@ -325,26 +313,7 @@ with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as
     with gr.Row():
         generate_img_btn = gr.Button("Generate Image 🖼️", variant="primary")
     img_output = gr.Image(label="Generated Image", show_label=True)
-    status = gr.Markdown("", visible=True)
-
-    def generate_image_with_status(prompt, progress=gr.Progress(track_tqdm=True)):
-        print(f"[Image Generation] Received prompt: {prompt}")
-        if not prompt or prompt.strip() == "":
-            print("[Image Generation] Empty prompt received. Skipping generation.")
-            return None, ""
-        yield None, "Generating image..."
-        print("[Image Generation] Starting image generation...")
-        image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024, progress=progress).images[0]
-        print("[Image Generation] Image generation complete.")
-        yield image, ""
-
-    generate_img_btn.click(
-        generate_image_with_status,
-        inputs=[prompt],
-        outputs=[img_output, status],
-        show_progress=True,
-        api_name=None
-    )
+    generate_img_btn.click(generate_image, inputs=prompt, outputs=img_output)
 
     # Live update prompt preview using .change() on all relevant components
     for comp in [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attr_list]:
