@@ -95,21 +95,40 @@ body {
   font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
   color: #22577a !important;
 }
-.gradio-container, .gr-block, .gr-block *, .gr-panel, .gr-column, .gr-row, .gr-box, .gr-form, .gr-input, .gr-dropdown {
+/* Force all Gradio containers to be light */
+.gradio-container, .gr-block, .gr-panel, .gr-column, .gr-row, .gr-box, .gr-form, .gr-input, .gr-dropdown, .gr-group, .gr-accordion, .gr-acc-panel {
   background: #fff !important;
   color: #22577a !important;
   border-radius: 18px !important;
   box-shadow: 0 2px 16px rgba(67,164,224,0.10) !important;
+  border: 1.5px solid #e0f3ff !important;
+  padding: 1.2em !important;
 }
-.gr-label, label, .gr-dropdown label, .gr-input label {
+/* Labels and headings */
+.gr-label, label, .gr-dropdown label, .gr-input label, .gr-markdown, .gr-markdown *, .prose, .prose *, h1, h2, h3, h4, h5, h6 {
+  color: #22577a !important;
+  background: transparent !important;
+  font-weight: 600 !important;
+  font-size: 1.1em !important;
+  border: none !important;
+  padding: 0.2em 0.8em 0.2em 0 !important;
+}
+/* Inputs and dropdowns */
+input, select, textarea, .gr-input input, .gr-input select, .gr-input textarea, .gr-dropdown select {
+  border: 1.5px solid #43a4e0 !important;
+  border-radius: 8px !important;
+  padding: 0.5em 1em !important;
+  font-size: 1em !important;
   background: #e0f3ff !important;
   color: #22577a !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
-  padding: 0.2em 0.8em !important;
-  box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
-  border: none !important;
+  transition: border 0.2s;
+  box-shadow: none !important;
 }
+input:focus, select:focus, textarea:focus {
+  border-color: #2563eb !important;
+  outline: none !important;
+}
+/* Buttons */
 .gr-button, button, .copy-btn {
   background: #2563eb !important;
   color: #fff !important;
@@ -124,19 +143,7 @@ body {
   color: #fff !important;
   box-shadow: 0 4px 16px rgba(67,164,224,0.15) !important;
 }
-input, select, textarea {
-  border: 1.5px solid #43a4e0 !important;
-  border-radius: 8px !important;
-  padding: 0.5em 1em !important;
-  font-size: 1em !important;
-  background: #f0fdfa !important;
-  color: #22577a !important;
-  transition: border 0.2s;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: #2563eb !important;
-  outline: none !important;
-}
+/* Chips */
 .chip {
   display: inline-block;
   background: #e0f3ff !important;
@@ -149,10 +156,6 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
   opacity: 1;
   animation: chipIn 0.4s cubic-bezier(.4,2,.6,1) both;
-}
-.gr-markdown, .gr-markdown *, .prose, .prose *, h1, h2, h3, h4, h5, h6 {
-  color: #22577a !important;
-  background: transparent !important;
 }
 @keyframes chipIn {
   0% { opacity: 0; transform: scale(0.7) translateY(10px);}
