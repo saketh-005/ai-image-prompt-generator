@@ -95,15 +95,20 @@ body {
   font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
   color: #22577a !important;
 }
-.gradio-container, .gr-block, .gr-block * {
-  color: #22577a !important;
-}
-.gr-block, .gr-panel, .gr-column, .gr-row {
+.gradio-container, .gr-block, .gr-block *, .gr-panel, .gr-column, .gr-row, .gr-box, .gr-form, .gr-input, .gr-dropdown {
   background: #fff !important;
+  color: #22577a !important;
   border-radius: 18px !important;
   box-shadow: 0 2px 16px rgba(67,164,224,0.10) !important;
-  padding: 1.5rem !important;
-  margin-bottom: 1.5rem !important;
+}
+.gr-label, label, .gr-dropdown label, .gr-input label {
+  background: #e0f3ff !important;
+  color: #22577a !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  padding: 0.2em 0.8em !important;
+  box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
+  border: none !important;
 }
 .gr-button, button, .copy-btn {
   background: #2563eb !important;
@@ -144,6 +149,10 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
   opacity: 1;
   animation: chipIn 0.4s cubic-bezier(.4,2,.6,1) both;
+}
+.gr-markdown, .gr-markdown *, .prose, .prose *, h1, h2, h3, h4, h5, h6 {
+  color: #22577a !important;
+  background: transparent !important;
 }
 @keyframes chipIn {
   0% { opacity: 0; transform: scale(0.7) translateY(10px);}
@@ -225,7 +234,7 @@ def generate_image(prompt):
     image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
     return image
 
-with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
     gr.HTML(custom_html)
     with gr.Row():
         gr.Markdown("""# AI Image Prompt Generator 🎨\nCreate creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
