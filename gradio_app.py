@@ -89,7 +89,7 @@ def copy_to_clipboard(text):
 # --- Custom HTML/JS/CSS for animated background and chips ---
 custom_html = '''
 <!-- Tailwind CSS CDN -->
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+<!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet"> -->
 <style>
 body {
   background: linear-gradient(135deg, #f0fdfa 0%, #e0e7ff 100%) !important;
@@ -203,6 +203,12 @@ document.addEventListener("DOMContentLoaded", function() {
   document.body.addEventListener("mouseleave", () => {
     overlay.style.setProperty("--glow-opacity", "0");
   });
+  // Force inline color for all relevant elements after rendering
+  setTimeout(() => {
+    document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, strong, em, .gr-markdown, .prose, .gr-block, .gradio-container').forEach(el => {
+      el.style.color = "#222";
+    });
+  }, 1000);
 });
 </script>
 '''
