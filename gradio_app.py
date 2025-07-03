@@ -335,4 +335,4 @@ with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as
             [prompt]
         )
 
-demo.launch()
+demo.launch(share=True)
