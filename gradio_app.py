@@ -22,7 +22,7 @@ artists = prompt_data.get("ARTISTS", [])
 colors = prompt_data.get("COLORS", [])
 
 # Configure Gemini API key (for prompt enhancement)
-GEMINI_API_KEY = "AIzaSyCf5-tLJsBNmzt7BoWaulolk6GROvXb5iY"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # --- NEW: Vertex AI Configuration for Imagen ---
 # REPLACE THESE WITH YOUR ACTUAL GOOGLE CLOUD PROJECT ID AND REGION
@@ -161,6 +161,15 @@ input:focus, select:focus, textarea:focus {
   0% { opacity: 0; transform: scale(0.7) translateY(10px);}
   100% { opacity: 1; transform: scale(1) translateY(0);}
 }
+.main-heading {
+  text-align: center;
+  font-size: 2.4em;
+  font-weight: 700;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  color: #22577a;
+  letter-spacing: 0.01em;
+}
 </style>
 <div class="glow-overlay"></div>
 <script>
@@ -239,6 +248,7 @@ def generate_image(prompt):
 
 with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
     gr.HTML(custom_html)
+    gr.HTML('<div class="main-heading">AI Image Prompt Generator 🎨</div>')
     with gr.Row():
         gr.Markdown("""# AI Image Prompt Generator 🎨\nCreate creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
     with gr.Row():
