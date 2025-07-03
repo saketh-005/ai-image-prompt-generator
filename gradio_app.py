@@ -327,17 +327,16 @@ with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as
     img_output = gr.Image(label="Generated Image", show_label=True)
     status = gr.Markdown("", visible=True)
 
-    def generate_image_with_status(prompt):
+    def generate_image_with_status(prompt, progress=gr.Progress(track_tqdm=True)):
         if not prompt or prompt.strip() == "":
             return None, ""
-        # Show status while generating
         yield None, "Generating image..."
-        image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
+        image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024, progress=progress).images[0]
         yield image, ""
 
     generate_img_btn.click(
         generate_image_with_status,
-        inputs=prompt,
+        inputs=[prompt],
         outputs=[img_output, status],
         show_progress=True,
         api_name=None
