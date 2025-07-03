@@ -183,6 +183,9 @@ body {
   background: #43a4e0 !important;
   color: #fff !important;
 }
+body, .gr-markdown, .prose, .gr-block.gr-markdown, .gr-block.gr-markdown * {
+  color: #222 !important;
+}
 </style>
 <div class="glow-overlay"></div>
 <script>
