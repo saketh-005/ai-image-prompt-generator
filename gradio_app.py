@@ -22,7 +22,7 @@ artists = prompt_data.get("ARTISTS", [])
 colors = prompt_data.get("COLORS", [])
 
 # Configure Gemini API key (for prompt enhancement)
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+GEMINI_API_KEY = "AIzaSyCf5-tLJsBNmzt7BoWaulolk6GROvXb5iY"
 
 # --- NEW: Vertex AI Configuration for Imagen ---
 # REPLACE THESE WITH YOUR ACTUAL GOOGLE CLOUD PROJECT ID AND REGION
