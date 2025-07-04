@@ -229,6 +229,42 @@ input:focus, select:focus, textarea:focus {
     margin-bottom: 0.5em;
 }
 
+/* --- Specific Fixes for Custom Attributes and Image Container --- */
+
+/* Ensure gr.List items and their text are styled correctly */
+.gr-list-item {
+    background-color: #f8fcff !important; /* Light background for list items */
+    color: #1a3e63 !important; /* Dark text for list items */
+    border: 1px solid #cce7ff !important;
+    border-radius: 8px !important;
+    margin-bottom: 0.5em !important; /* Space between items */
+    padding: 0.6em 1em !important;
+}
+
+/* Targeting the input field specifically within the custom attributes section */
+.gr-textbox[placeholder="Type and press Enter to add"] input {
+    background-color: #f8fcff !important;
+    color: #1a3e63 !important;
+    border-color: #82c2f0 !important;
+}
+
+/* Styling for the gr.Image container */
+.gr-image {
+    background-color: #f8fcff !important; /* Very light blue background for image container */
+    border: 1px solid #cce7ff !important; /* Consistent light blue border */
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 50, 100, 0.05) !important; /* Soft shadow */
+    min-height: 300px; /* Ensure it's not too small when empty */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensure the loading spinner is visible on the lighter background */
+.gr-image .progress-spinner {
+    filter: invert(1); /* Invert color of spinner to make it visible on light background */
+}
+
 </style>
 <div class="glow-overlay"></div>
 <script>
@@ -342,6 +378,7 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
     with gr.Row():
         custom_attr = gr.Textbox(label="Add custom attribute (anything not covered above)", placeholder="Type and press Enter to add", interactive=True)
         add_btn = gr.Button("Add Attribute")
+    # The gr.List component itself, and its items, need specific styling
     custom_attr_list = gr.List(label="Custom Attributes", value=[], interactive=True)
 
     gr.Markdown("---")
@@ -362,6 +399,7 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
     gr.Markdown("_Note: Image generation generally takes 300-400 seconds. Please be patient!_", elem_id="image-gen-note")
     with gr.Row():
         generate_img_btn = gr.Button("Generate Image 🖼️", variant="primary")
+    # The gr.Image component needs specific styling for its background
     img_output = gr.Image(label="Generated Image", show_label=True)
 
     # --- Attach all event listeners AFTER all components are defined ---
@@ -381,7 +419,6 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
 
 
     # Live update prompt preview using .change() on all relevant components
-    # This section remains after component definitions
     for comp in [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attr_list]:
         comp.change(
             generate_prompt,
