@@ -254,7 +254,7 @@ def generate_image(prompt):
     image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
     return image
 
-with gr.Blocks(css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
+with gr.Blocks(theme="default", css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
     gr.HTML(custom_html)
     gr.HTML('<div class="main-heading">AI Image Prompt Generator 🎨</div>')
     with gr.Row():
