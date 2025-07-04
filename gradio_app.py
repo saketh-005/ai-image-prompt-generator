@@ -267,6 +267,15 @@ input:focus, select:focus, textarea:focus {
 
 /* --- Fix for Dropdown Containers (new additions) --- */
 
+/* Target the main gr-dropdown container itself */
+.gr-dropdown {
+    background-color: #ffffff !important; /* Ensure the main dropdown block is white */
+    border-color: #cce7ff !important; /* Light border */
+    color: #1a3e63 !important; /* Ensure text color is dark */
+    /* Remove any potentially inherited dark shadows or backgrounds */
+    box-shadow: none !important;
+}
+
 /* Target the core dropdown input area where selected items (chips) live */
 .gr-multiselect-input, .gr-dropdown-input {
     background-color: #f8fcff !important; /* Very light blue background */
