@@ -3,9 +3,9 @@ title: Ai Image Prompt Generator
 emoji: 🖼
 colorFrom: purple
 colorTo: red
-sdk: gradio
-sdk_version: 5.25.2
-app_file: gradio_app.py
+sdk: streamlit
+# sdk_version: (Optional, Streamlit versions are usually handled via requirements.txt)
+app_file: streamlit_app.py
 pinned: false
 license: mit
 ---
