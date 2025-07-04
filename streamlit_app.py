@@ -46,25 +46,22 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'your-gcp-project-id') # e.g., 'my-ai-project-12345'
 GCP_REGION = os.getenv('GCP_REGION', 'us-central1') # e.g., 'us-central1'
 
-# Initialize google-genai client for Vertex AI
-# This part assumes 'google.generativeai.Client' exists after correct installation
+# Initialize google-generativeai client for Vertex AI
 try:
     if 'genai_client' not in st.session_state:
-        # Check if project ID is provided before attempting Vertex AI client init
         if GCP_PROJECT_ID and GCP_PROJECT_ID != 'your-gcp-project-id':
             st.session_state.genai_client = genai.Client(vertexai=True, project=GCP_PROJECT_ID, location=GCP_REGION)
             st.info("Vertex AI Client initialized for Imagen generation.")
         else:
             st.session_state.genai_client = None
             st.warning("GCP_PROJECT_ID not set. Imagen generation via Vertex AI may not work.")
-    client = st.session_state.get('genai_client', None) # Get client from session_state or None
+    client = st.session_state.get('genai_client', None) 
 except Exception as e:
     client = None
     st.error(f"Vertex AI Client Initialization Error: {e}. Please ensure GCP_PROJECT_ID and GCP_REGION are correct and Vertex AI API is enabled, and the library is installed with `google-generativeai[vertexai]`.")
 
 # --- Prompt generator logic ---
 def generate_prompt_text(style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attributes):
-    # Ensure all are lists, not None
     def ensure_list(x):
         return x if isinstance(x, list) else ([] if x is None else [x])
     style = ensure_list(style)
@@ -96,9 +93,8 @@ def enhance_prompt_with_gemini(prompt):
         st.error("Gemini API key not set. Please set GEMINI_API_KEY environment variable.")
         return "[Gemini API key not set.]"
     try:
-        # **FIX:** Use genai.configure and genai.GenerativeModel for the public Gemini API
         genai.configure(api_key=GEMINI_API_KEY)
-        text_model = genai.GenerativeModel('gemini-1.5-flash-latest') # Direct model access after configure
+        text_model = genai.GenerativeModel('gemini-1.5-flash-latest')
         with st.spinner("Enhancing prompt with AI..."):
             response = text_model.generate_content(
                 contents=f"Rewrite this comma-separated list as a perfect, detailed prompt for an AI image generation model: {prompt}"
@@ -152,7 +148,7 @@ body {
     background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%) !important;
     min-height: 100vh;
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    color: #1a3e63; /* Darker blue for text */
+    color: #1a3e63; /* Darker blue for general text */
 }
 
 /* Main Streamlit container */
@@ -184,17 +180,18 @@ p, li, .stMarkdown {
     line-height: 1.6;
 }
 
-/* Widgets (input fields, dropdowns, text areas) */
+/* Widgets (input fields, select boxes, text areas) */
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stMultiSelect > div:first-child > div, /* Multi-select input area */
 .stSelectbox > div:first-child > div { /* Selectbox input area */
-    border: 1.5px solid #82c2f0; /* Medium blue border */
-    border-radius: 10px;
-    padding: 0.6em 1.2em;
-    background-color: #f8fcff; /* Very light blue background */
-    color: #1a3e63;
-    box-shadow: none;
+    border: 1.5px solid #82c2f0 !important;
+    border-radius: 10px !important;
+    padding: 0.6em 1.2em !important;
+    font-size: 1em !important;
+    background: #f8fcff !important; /* Very light blue background for inputs */
+    color: #222222 !important; /* FIX: Make input text very dark for visibility */
+    box-shadow: none !important;
 }
 
 /* Focus state for inputs */
@@ -202,7 +199,7 @@ p, li, .stMarkdown {
 .stTextArea > div > div > textarea:focus,
 .stMultiSelect > div:first-child > div:focus,
 .stSelectbox > div:first-child > div:focus {
-    border-color: #007bff; /* Bright blue on focus */
+    border-color: #007bff !important; /* Bright blue on focus */
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Light glow on focus */
     outline: none;
 }
@@ -233,12 +230,12 @@ p, li, .stMarkdown {
 /* Multi-select selected items (chips) */
 .stMultiSelect div[data-baseweb="tag"] {
     background-color: #e0f0ff !important; /* Lighter blue for chips */
-    color: #1a3e63 !important;
+    color: #222222 !important; /* FIX: Make chip text very dark */
     border-radius: 16px !important;
     border: 1px solid #cce7ff !important;
 }
 .stMultiSelect div[data-baseweb="tag"] span {
-    color: #1a3e63 !important; /* Text inside chip */
+    color: #222222 !important; /* FIX: Ensure text inside chip is also very dark */
 }
 .stMultiSelect div[data-baseweb="tag"] svg {
     fill: #007bff !important; /* 'x' icon color */
@@ -250,11 +247,12 @@ p, li, .stMarkdown {
 .stTextArea[aria-label="Enhanced Prompt"] textarea {
     background-color: #f0f7ff !important; /* Force light blue background */
     border: 1px dashed #a0d0ff !important; /* Dashed border for distinction */
-    color: #1a3e63 !important; /* Force dark blue text color */
+    color: #222222 !important; /* FIX: Force very dark text color */
     min-height: 80px;
     overflow-y: auto;
 }
 /* FIX: Also target the outer div for these text areas if background override needed */
+/* This helps ensure the background stays light even if Streamlit's dark mode intervenes on the parent div */
 .stTextArea[aria-label="Prompt Preview"] > div > div,
 .stTextArea[aria-label="Enhanced Prompt"] > div > div {
     background-color: #f0f7ff !important; /* Apply to the container div too */
