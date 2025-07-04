@@ -41,24 +41,14 @@ colors = prompt_data.get("COLORS", [])
 # Configure Gemini API key (for prompt enhancement)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# --- NEW: Vertex AI Configuration for Imagen ---
-# REPLACE THESE WITH YOUR ACTUAL GOOGLE CLOUD PROJECT ID AND REGION
-GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'your-gcp-project-id') # e.g., 'my-ai-project-12345'
-GCP_REGION = os.getenv('GCP_REGION', 'us-central1') # e.g., 'us-central1'
+# --- Vertex AI Configuration for Imagen (REMOVED - Not used for current image generation) ---
+# GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'your-gcp-project-id')
+# GCP_REGION = os.getenv('GCP_REGION', 'us-central1')
 
-# Initialize google-generativeai client for Vertex AI
-try:
-    if 'genai_client' not in st.session_state:
-        if GCP_PROJECT_ID and GCP_PROJECT_ID != 'your-gcp-project-id':
-            st.session_state.genai_client = genai.Client(vertexai=True, project=GCP_PROJECT_ID, location=GCP_REGION)
-            st.info("Vertex AI Client initialized for Imagen generation.")
-        else:
-            st.session_state.genai_client = None
-            st.warning("GCP_PROJECT_ID not set. Imagen generation via Vertex AI may not work.")
-    client = st.session_state.get('genai_client', None) 
-except Exception as e:
-    client = None
-    st.error(f"Vertex AI Client Initialization Error: {e}. Please ensure GCP_PROJECT_ID and GCP_REGION are correct and Vertex AI API is enabled, and the library is installed with `google-generativeai[vertexai]`.")
+# The 'client' variable is no longer needed if Imagen from Vertex AI is not used.
+# If you later decide to integrate Imagen from Vertex AI, you'd re-add this block.
+# client = None # Explicitly set to None as it's not used
+
 
 # --- Prompt generator logic ---
 def generate_prompt_text(style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attributes):
@@ -101,7 +91,7 @@ def enhance_prompt_with_gemini(prompt):
             )
             return response.text.strip()
     except Exception as e:
-        st.error(f"Gemini API error during prompt enhancement: {e}. Check your API key and network connection.")
+        st.error(f"Gemini API error during prompt enhancement: {e}. Check your API key and network connection and ensure `google-generativeai` is installed.")
         return f"[Gemini API error: {e}]"
 
 # --- Image generation pipeline setup ---
@@ -190,7 +180,7 @@ p, li, .stMarkdown {
     padding: 0.6em 1.2em !important;
     font-size: 1em !important;
     background: #f8fcff !important; /* Very light blue background for inputs */
-    color: #222222 !important; /* FIX: Make input text very dark for visibility */
+    color: #222222 !important; /* Ensure input text is very dark for visibility */
     box-shadow: none !important;
 }
 
@@ -230,28 +220,28 @@ p, li, .stMarkdown {
 /* Multi-select selected items (chips) */
 .stMultiSelect div[data-baseweb="tag"] {
     background-color: #e0f0ff !important; /* Lighter blue for chips */
-    color: #222222 !important; /* FIX: Make chip text very dark */
+    color: #222222 !important; /* Ensure chip text is very dark */
     border-radius: 16px !important;
     border: 1px solid #cce7ff !important;
 }
 .stMultiSelect div[data-baseweb="tag"] span {
-    color: #222222 !important; /* FIX: Ensure text inside chip is also very dark */
+    color: #222222 !important; /* Ensure text inside chip is also very dark */
 }
 .stMultiSelect div[data-baseweb="tag"] svg {
     fill: #007bff !important; /* 'x' icon color */
 }
 
 /* Text areas for prompt preview and enhanced prompt */
-/* FIX: Ensure text color is visible in both light/dark mode */
+/* Ensure text color is visible in both light/dark mode */
 .stTextArea[aria-label="Prompt Preview"] textarea,
 .stTextArea[aria-label="Enhanced Prompt"] textarea {
     background-color: #f0f7ff !important; /* Force light blue background */
     border: 1px dashed #a0d0ff !important; /* Dashed border for distinction */
-    color: #222222 !important; /* FIX: Force very dark text color */
+    color: #222222 !important; /* Force very dark text color */
     min-height: 80px;
     overflow-y: auto;
 }
-/* FIX: Also target the outer div for these text areas if background override needed */
+/* Also target the outer div for these text areas if background override needed */
 /* This helps ensure the background stays light even if Streamlit's dark mode intervenes on the parent div */
 .stTextArea[aria-label="Prompt Preview"] > div > div,
 .stTextArea[aria-label="Enhanced Prompt"] > div > div {
