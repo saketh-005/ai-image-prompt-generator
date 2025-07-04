@@ -311,6 +311,7 @@ with gr.Blocks(theme="default", css="body { font-family: 'Segoe UI', 'Roboto', s
 
     # --- Image Generation Section ---
     gr.Markdown("---\n#### 4. Generate image from your prompt:")
+    gr.Markdown("_Note: Image generation generally takes 300-400 seconds. Please be patient!_", elem_id="image-gen-note")
     with gr.Row():
         generate_img_btn = gr.Button("Generate Image 🖼️", variant="primary")
     img_output = gr.Image(label="Generated Image", show_label=True)
