@@ -57,7 +57,7 @@ try:
         else:
             st.session_state.genai_client = None
             st.warning("GCP_PROJECT_ID not set. Imagen generation via Vertex AI may not work.")
-    client = st.session_state.genai_client
+    client = st.session_state.get('genai_client', None) # Get client from session_state or None
 except Exception as e:
     client = None
     st.error(f"Vertex AI Client Initialization Error: {e}. Please ensure GCP_PROJECT_ID and GCP_REGION are correct and Vertex AI API is enabled, and the library is installed with `google-generativeai[vertexai]`.")
@@ -244,26 +244,20 @@ p, li, .stMarkdown {
     fill: #007bff !important; /* 'x' icon color */
 }
 
-/* Multi-select dropdown options */
-.stMultiSelect .st-cm { /* Container for dropdown options */
-    background-color: #ffffff; /* White background for options list */
-    border: 1px solid #cce7ff;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.1);
+/* Text areas for prompt preview and enhanced prompt */
+/* FIX: Ensure text color is visible in both light/dark mode */
+.stTextArea[aria-label="Prompt Preview"] textarea,
+.stTextArea[aria-label="Enhanced Prompt"] textarea {
+    background-color: #f0f7ff !important; /* Force light blue background */
+    border: 1px dashed #a0d0ff !important; /* Dashed border for distinction */
+    color: #1a3e63 !important; /* Force dark blue text color */
+    min-height: 80px;
+    overflow-y: auto;
 }
-.stMultiSelect .st-cm .st-cb { /* Individual dropdown option */
-    color: #1a3e63;
-    background-color: transparent;
-    padding: 0.8em 1.2em;
-}
-.stMultiSelect .st-cm .st-cb:hover {
-    background-color: #e0f0ff; /* Light blue on hover */
-    color: #0056b3;
-}
-.stMultiSelect .st-cm .st-cb.st-active { /* Selected option in dropdown */
-    background-color: #cce7ff; /* Slightly darker blue for selected option */
-    color: #0056b3;
-    font-weight: 600;
+/* FIX: Also target the outer div for these text areas if background override needed */
+.stTextArea[aria-label="Prompt Preview"] > div > div,
+.stTextArea[aria-label="Enhanced Prompt"] > div > div {
+    background-color: #f0f7ff !important; /* Apply to the container div too */
 }
 
 /* Image container */
@@ -475,8 +469,13 @@ if st.button("Refine Prompt 🪄", key="refine_btn"):
         # Clear any previous image if prompt is refined
         st.session_state.generated_image = None
         with st.spinner("Refining prompt with Gemini..."):
-            st.session_state.enhanced_prompt = enhance_prompt_with_gemini(st.session_state.generated_prompt)
-        st.success("Prompt refined!")
+            new_enhanced_prompt = enhance_prompt_with_gemini(st.session_state.generated_prompt)
+        if new_enhanced_prompt: # Only update if enhancement was successful
+            st.session_state.enhanced_prompt = new_enhanced_prompt
+            st.success("Prompt refined!")
+            st.rerun() # FIX: Force rerun to immediately show updated prompt
+        else:
+            st.error("Failed to refine prompt.")
     else:
         st.warning("Please generate a base prompt first before refining.")
 
