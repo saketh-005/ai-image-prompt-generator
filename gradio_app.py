@@ -163,7 +163,7 @@ input:focus, select:focus, textarea:focus {
 }
 .main-heading {
   text-align: center;
-  font-size: 3.2em;
+  font-size: 3.8em;
   font-weight: 700;
   margin-top: 1.2em;
   margin-bottom: 0.5em;
@@ -173,7 +173,7 @@ input:focus, select:focus, textarea:focus {
 /* Section headings and labels */
 .gr-markdown h2, .gr-markdown h3, .gr-markdown h4, .gr-markdown h5, .gr-markdown h6,
 .gr-label, label, .gr-dropdown label, .gr-input label {
-  font-size: 1.15em !important;
+  font-size: 1.35em !important;
   font-weight: 600 !important;
   color: #22577a !important;
   background: transparent !important;
