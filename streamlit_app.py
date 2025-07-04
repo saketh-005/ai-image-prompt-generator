@@ -47,15 +47,20 @@ GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'your-gcp-project-id') # e.g., 'my-
 GCP_REGION = os.getenv('GCP_REGION', 'us-central1') # e.g., 'us-central1'
 
 # Initialize google-genai client for Vertex AI
+# This part assumes 'google.generativeai.Client' exists after correct installation
 try:
-    # Attempt to initialize Vertex AI client only if project ID is not default
-    if GCP_PROJECT_ID and GCP_PROJECT_ID != 'your-gcp-project-id' and 'genai_client' not in st.session_state:
-        st.session_state.genai_client = genai.Client(vertexai=True, project=GCP_PROJECT_ID, location=GCP_REGION)
-    client = st.session_state.get('genai_client', None) # Get client from session_state or None
+    if 'genai_client' not in st.session_state:
+        # Check if project ID is provided before attempting Vertex AI client init
+        if GCP_PROJECT_ID and GCP_PROJECT_ID != 'your-gcp-project-id':
+            st.session_state.genai_client = genai.Client(vertexai=True, project=GCP_PROJECT_ID, location=GCP_REGION)
+            st.info("Vertex AI Client initialized for Imagen generation.")
+        else:
+            st.session_state.genai_client = None
+            st.warning("GCP_PROJECT_ID not set. Imagen generation via Vertex AI may not work.")
+    client = st.session_state.genai_client
 except Exception as e:
     client = None
-    st.error(f"Vertex AI Client Initialization Error: {e}")
-    st.warning("Please ensure GCP_PROJECT_ID and GCP_REGION are correct and Vertex AI API is enabled.")
+    st.error(f"Vertex AI Client Initialization Error: {e}. Please ensure GCP_PROJECT_ID and GCP_REGION are correct and Vertex AI API is enabled, and the library is installed with `google-generativeai[vertexai]`.")
 
 # --- Prompt generator logic ---
 def generate_prompt_text(style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attributes):
@@ -75,12 +80,10 @@ def generate_prompt_text(style, subject, mood, clothing_sel, prop_sel, pose_sel,
     
     custom_attributes_flat = []
     if custom_attributes:
-        # Streamlit's multiselect often returns strings directly if not nested
-        # but if custom_attr_list was a list of lists, this handles it.
         if isinstance(custom_attributes, list) and custom_attributes and isinstance(custom_attributes[0], list):
              custom_attributes_flat = [item for sublist in custom_attributes for item in sublist]
         else:
-             custom_attributes_flat = custom_attributes # Assume it's already a flat list of strings
+             custom_attributes_flat = custom_attributes
 
     prompt_parts = [
         ", ".join(style), ", ".join(subject), ", ".join(mood), ", ".join(clothing_sel), ", ".join(prop_sel), ", ".join(pose_sel), ", ".join(setting_sel), ", ".join(scene_sel), ", ".join(artist_sel), ", ".join(color_sel), ", ".join(custom_attributes_flat)
@@ -93,24 +96,27 @@ def enhance_prompt_with_gemini(prompt):
         st.error("Gemini API key not set. Please set GEMINI_API_KEY environment variable.")
         return "[Gemini API key not set.]"
     try:
-        text_client = genai.Client(api_key=GEMINI_API_KEY)
+        # **FIX:** Use genai.configure and genai.GenerativeModel for the public Gemini API
+        genai.configure(api_key=GEMINI_API_KEY)
+        text_model = genai.GenerativeModel('gemini-1.5-flash-latest') # Direct model access after configure
         with st.spinner("Enhancing prompt with AI..."):
-            response = text_client.models.generate_content(
-                model='gemini-1.5-flash-latest',
+            response = text_model.generate_content(
                 contents=f"Rewrite this comma-separated list as a perfect, detailed prompt for an AI image generation model: {prompt}"
             )
             return response.text.strip()
     except Exception as e:
-        st.error(f"Gemini API error during prompt enhancement: {e}")
+        st.error(f"Gemini API error during prompt enhancement: {e}. Check your API key and network connection.")
         return f"[Gemini API error: {e}]"
 
 # --- Image generation pipeline setup ---
 @st.cache_resource
 def load_diffusion_pipeline():
-    # Use st.cache_resource to load the model once, across all reruns
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model_repo_id = "stabilityai/sdxl-turbo"
-    torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    if torch.cuda.is_available():
+        torch_dtype = torch.float16
+    else:
+        torch_dtype = torch.float32
     
     st.info(f"Loading Diffusion Pipeline '{model_repo_id}' on {device} with dtype {torch_dtype}...")
     pipe = DiffusionPipeline.from_pretrained(model_repo_id, torch_dtype=torch_dtype)
@@ -118,45 +124,44 @@ def load_diffusion_pipeline():
     st.success("Diffusion Pipeline loaded!")
     return pipe
 
-# Load the pipeline globally (will be cached)
 pipe = load_diffusion_pipeline()
 
 def generate_image_from_prompt(prompt_text):
     if not prompt_text or prompt_text.strip() == "":
         st.warning("Please generate a prompt first!")
         return None
-    
-    with st.spinner("Generating image (this can take 30-60 seconds locally, or longer on cloud platforms)..."):
-        try:
-            image = pipe(prompt=prompt_text, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
-            st.success("Image generation complete!")
-            return image
-        except Exception as e:
-            st.error(f"Error during image generation: {e}")
-            return None
+    try:
+        st.info("Generating image... This may take 30-60 seconds locally, or longer on Hugging Face Spaces.")
+        image = pipe(prompt=prompt_text, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
+        return image
+    except Exception as e:
+        st.error(f"Image generation failed: {e}")
+        return None
 
-# --- Streamlit App Layout ---
 
-st.set_page_config(
-    page_title="AI Image Prompt Generator",
-    page_icon="🎨",
-    layout="wide",
-    initial_sidebar_state="expanded" 
-)
+# --- Streamlit UI ---
 
-# Custom CSS for Streamlit (simplified from Gradio, focusing on blue theme where possible)
+# Set page config for wider layout
+st.set_page_config(layout="wide", page_title="AI Image Prompt Generator")
+
+# Custom CSS for blue theme
 st.markdown("""
 <style>
-/* General body background and font */
+/* General body and container styling */
 body {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%) !important;
+    min-height: 100vh;
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-}
-.stApp {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%); /* Light blue gradient */
     color: #1a3e63; /* Darker blue for text */
 }
 
-/* Titles and Headers */
+/* Main Streamlit container */
+.stApp {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%) !important;
+    color: #1a3e63;
+}
+
+/* Header and titles */
 h1 {
     color: #0056b3; /* Strong blue for main title */
     text-align: center;
@@ -172,21 +177,37 @@ h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
-/* Markdown text */
-.stMarkdown {
+/* General text */
+p, li, .stMarkdown {
     color: #335d8a; /* Slightly lighter blue for body text */
+    font-size: 1em;
+    line-height: 1.6;
 }
 
-/* Input fields, select boxes, text areas */
+/* Widgets (input fields, dropdowns, text areas) */
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stMultiSelect > div:first-child > div, /* Multi-select input area */
 .stSelectbox > div:first-child > div { /* Selectbox input area */
-    background-color: #f8fcff !important; /* Very light blue */
-    border: 1.5px solid #82c2f0 !important; /* Medium blue border */
-    border-radius: 10px !important;
-    color: #1a3e63 !important;
+    border: 1.5px solid #82c2f0; /* Medium blue border */
+    border-radius: 10px;
+    padding: 0.6em 1.2em;
+    background-color: #f8fcff; /* Very light blue background */
+    color: #1a3e63;
+    box-shadow: none;
 }
+
+/* Focus state for inputs */
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus,
+.stMultiSelect > div:first-child > div:focus,
+.stSelectbox > div:first-child > div:focus {
+    border-color: #007bff; /* Bright blue on focus */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Light glow on focus */
+    outline: none;
+}
+
+/* Labels for widgets */
 .stTextInput > label, .stTextArea > label, .stMultiSelect > label, .stSelectbox > label {
     color: #1a3e63 !important; /* Dark blue for labels */
     font-weight: 600;
@@ -223,24 +244,26 @@ h2, h3, h4, h5, h6 {
     fill: #007bff !important; /* 'x' icon color */
 }
 
-/* Text areas for prompt preview */
-.stTextArea[aria-label="Prompt Preview"] textarea,
-.stTextArea[aria-label="Enhanced Prompt"] textarea {
-    background-color: #f0f7ff !important; /* Very light blue for prompt output */
-    border: 1px dashed #a0d0ff !important; /* Dashed border for distinction */
-    min-height: 80px;
-    overflow-y: auto;
-}
-
-/* Info/Warning/Success messages and Spinners */
-/* The specific class might change with Streamlit versions, but this targets the common alert container */
-.st-emotion-cache-p5m87v { /* This might need adjustment based on Streamlit version */
-    background-color: #e0f0ff; /* Light blue for info/spinner backgrounds */
-    border-radius: 8px;
+/* Multi-select dropdown options */
+.stMultiSelect .st-cm { /* Container for dropdown options */
+    background-color: #ffffff; /* White background for options list */
     border: 1px solid #cce7ff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.1);
 }
-.st-emotion-cache-p5m87v > div > p {
-    color: #1a3e63 !important;
+.stMultiSelect .st-cm .st-cb { /* Individual dropdown option */
+    color: #1a3e63;
+    background-color: transparent;
+    padding: 0.8em 1.2em;
+}
+.stMultiSelect .st-cm .st-cb:hover {
+    background-color: #e0f0ff; /* Light blue on hover */
+    color: #0056b3;
+}
+.stMultiSelect .st-cm .st-cb.st-active { /* Selected option in dropdown */
+    background-color: #cce7ff; /* Slightly darker blue for selected option */
+    color: #0056b3;
+    font-weight: 600;
 }
 
 /* Image container */
@@ -265,6 +288,20 @@ h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: center;
 }
+
+/* For info/warning/success messages and spinners */
+/* This class targets the container of Streamlit alerts/messages */
+/* The specific class name might change with Streamlit versions. You might need to inspect your browser's dev tools if this doesn't work perfectly. */
+div[data-testid="stStatusWidget"] { /* Common test ID for status widgets */
+    background-color: #e0f0ff !important; /* Light blue for info/spinner backgrounds */
+    border-radius: 8px !important;
+    border: 1px solid #cce7ff !important;
+    color: #1a3e63 !important;
+}
+div[data-testid="stStatusWidget"] p {
+    color: #1a3e63 !important; /* Ensure text color in alerts */
+}
+
 
 </style>
 """, unsafe_allow_html=True)
@@ -329,9 +366,9 @@ def update_prompt():
             current_selections["setting"], current_selections["scene"], current_selections["artist"],
             current_selections["color"], current_selections["custom_attributes"]
         )
-        # Clear enhanced prompt if base prompt changes
+        # Clear enhanced prompt and image if base prompt changes
         st.session_state.enhanced_prompt = ""
-        st.session_state.generated_image = None # Clear generated image if prompt changes
+        st.session_state.generated_image = None
 
 # Define selection widgets
 st.markdown("---")
@@ -416,7 +453,7 @@ with cols_prompt[1]:
             pyperclip.copy(st.session_state.generated_prompt)
             st.toast("Prompt copied to clipboard!")
     else:
-        st.markdown("*(Manual copy)*", help="Copy button disabled. Please copy manually.")
+        st.markdown("*(Copy manually)*", help="Copy button disabled. Please copy manually.")
 
 
 cols_enhanced = st.columns([0.85, 0.15])
@@ -429,12 +466,14 @@ with cols_enhanced[1]:
             pyperclip.copy(st.session_state.enhanced_prompt)
             st.toast("Enhanced prompt copied to clipboard!")
     else:
-        st.markdown("*(Manual copy)*", help="Copy button disabled. Please copy manually.")
+        st.markdown("*(Copy manually)*", help="Copy button disabled. Please copy manually.")
 
 
 # Refine Prompt Button
 if st.button("Refine Prompt 🪄", key="refine_btn"):
     if st.session_state.generated_prompt:
+        # Clear any previous image if prompt is refined
+        st.session_state.generated_image = None
         with st.spinner("Refining prompt with Gemini..."):
             st.session_state.enhanced_prompt = enhance_prompt_with_gemini(st.session_state.generated_prompt)
         st.success("Prompt refined!")
@@ -456,5 +495,6 @@ if st.button("Generate Image 🖼️", key="generate_img_btn", type="primary"):
 if st.session_state.generated_image:
     st.image(st.session_state.generated_image, caption="Generated Image", use_column_width=True)
 
-# Call update_prompt initially to set the default prompt if no selections are made yet
-update_prompt()
+# Initial prompt generation on first run or clear
+if not st.session_state.generated_prompt:
+    update_prompt() # Call once to initialize on app start or state clear
