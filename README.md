@@ -84,6 +84,6 @@ Try it instantly on Hugging Face Spaces: [ai-image-prompt-generator](https://hug
 ---
 
 ## License
-MIT
+[MIT](LICENSE) © Saketh Jangala
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
