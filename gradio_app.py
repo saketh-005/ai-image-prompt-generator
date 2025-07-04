@@ -1,4 +1,3 @@
-import gradio as gr
 from prompt_data import prompt_data
 import os
 import google.generativeai as genai
@@ -265,15 +264,19 @@ input:focus, select:focus, textarea:focus {
     filter: invert(1); /* Invert color of spinner to make it visible on light background */
 }
 
-/* --- Fix for Dropdown Containers (new additions) --- */
+/* --- Fix for Dropdown Containers (new additions for outer container) --- */
 
 /* Target the main gr-dropdown container itself */
 .gr-dropdown {
-    background-color: #ffffff !important; /* Ensure the main dropdown block is white */
-    border-color: #cce7ff !important; /* Light border */
-    color: #1a3e63 !important; /* Ensure text color is dark */
-    /* Remove any potentially inherited dark shadows or backgrounds */
-    box-shadow: none !important;
+    background-color: #ffffff !important; /* Force white background for the dropdown container */
+    border: 1px solid #cce7ff !important; /* Ensure light border */
+    box-shadow: 0 4px 20px rgba(0, 50, 100, 0.08) !important; /* Consistent shadow */
+    border-radius: 16px !important; /* Consistent border-radius */
+    padding: 1.5em !important; /* Consistent padding */
+}
+/* Ensure labels inside dropdowns are correctly colored (might be redundant but for safety) */
+.gr-dropdown label {
+    color: #1a3e63 !important; /* Dark blue for dropdown labels */
 }
 
 /* Target the core dropdown input area where selected items (chips) live */
@@ -283,7 +286,6 @@ input:focus, select:focus, textarea:focus {
     border: 1.5px solid #82c2f0 !important;
     border-radius: 10px !important;
     padding: 0.6em 1.2em !important;
-    /* Adjust padding for multi-select to look good with chips */
     padding-top: 0.3em !important;
     padding-bottom: 0.3em !important;
     min-height: 38px; /* Ensure a consistent height even with no selections */
@@ -298,27 +300,26 @@ input:focus, select:focus, textarea:focus {
     margin: 0.2rem !important;
     font-size: 0.9em !important;
     border: 1px solid #cce7ff !important;
-    box-shadow: none !important; /* Remove chip shadow for consistency within dropdown */
+    box-shadow: none !important;
 }
 
 /* Style the 'x' button on dropdown chips */
 .gr-multiselect-input .gradio-chip button {
     background: transparent !important;
-    color: #007bff !important; /* Blue for the 'x' */
+    color: #007bff !important;
     font-size: 1.1em !important;
     padding: 0 0.2em !important;
 }
 .gr-multiselect-input .gradio-chip button:hover {
     color: #0056b3 !important;
     background: transparent !important;
-    transform: none !important; /* Prevent button specific transform on chip x */
+    transform: none !important;
 }
 
 
 /* Style the dropdown menu (the actual list of options) when it opens */
-/* This is often a global element, so be careful with specificity */
-.gr-options, .gr-options > div { /* Targeting the container for dropdown options */
-    background-color: #ffffff !important; /* White background for the dropdown menu */
+.gr-options, .gr-options > div {
+    background-color: #ffffff !important;
     border: 1px solid #cce7ff !important;
     border-radius: 10px !important;
     box-shadow: 0 4px 15px rgba(0, 50, 100, 0.1) !important;
@@ -328,23 +329,23 @@ input:focus, select:focus, textarea:focus {
 .gr-option {
     color: #1a3e63 !important;
     padding: 0.8em 1.2em !important;
-    background-color: transparent !important; /* Ensure no default dark background */
+    background-color: transparent !important;
 }
 
 .gr-option:hover {
-    background-color: #e0f0ff !important; /* Light blue on hover for dropdown options */
+    background-color: #e0f0ff !important;
     color: #0056b3 !important;
 }
 
 .gr-option.selected {
-    background-color: #cce7ff !important; /* Slightly darker blue for selected option */
+    background-color: #cce7ff !important;
     color: #0056b3 !important;
     font-weight: 600 !important;
 }
 
 /* Ensure the caret (down arrow) is visible */
 .gr-dropdown-caret {
-    color: #007bff !important; /* Blue caret */
+    color: #007bff !important;
 }
 
 
@@ -432,7 +433,8 @@ with gr.Blocks(theme=gr.themes.Soft(), css=full_custom_css) as demo:
         copy_prompt_btn = gr.Button("📋", elem_classes=["copy-btn"], scale=1)
     # Enhanced Prompt row
     with gr.Row():
-        enhanced_prompt = gr.Textbox(label="Enhanced Prompt (powered by Gemini)", interactive=False, elem_id="enhanced-prompt", scale=8, lines=3)
+        # Changed label here: removed "(powered by Gemini)"
+        enhanced_prompt = gr.Textbox(label="Enhanced Prompt", interactive=False, elem_id="enhanced-prompt", scale=8, lines=3)
         copy_enhanced_btn = gr.Button("📋", elem_classes=["copy-btn"], scale=1)
     refine_btn = gr.Button("Refine Prompt with Gemini 🪄", variant="secondary")
 
