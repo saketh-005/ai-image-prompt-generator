@@ -48,6 +48,7 @@ def generate_prompt(style, subject, mood, clothing_sel, prop_sel, pose_sel, sett
     clothing_sel = ensure_list(clothing_sel)
     prop_sel = ensure_list(prop_sel)
     pose_sel = ensure_list(pose_sel)
+    pose_sel = ensure_list(pose_sel)
     setting_sel = ensure_list(setting_sel)
     scene_sel = ensure_list(scene_sel)
     artist_sel = ensure_list(artist_sel)
@@ -89,111 +90,147 @@ def copy_to_clipboard(text):
 # --- Custom HTML/JS/CSS for animated background and chips ---
 custom_html = '''
 <style>
+/* General Body and Container Styling */
 body {
-  background: linear-gradient(135deg, #e0f3ff 0%, #b3e0ff 100%) !important;
+  background: linear-gradient(135deg, #f0f7ff 0%, #e0efff 100%) !important; /* Lighter, subtle blue gradient */
   min-height: 100vh;
   font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif !important;
-  color: #22577a !important;
+  color: #1a3e63 !important; /* Darker blue for text */
 }
-/* Force all Gradio containers to be light */
+
+/* Force all Gradio containers to be light and consistent */
 .gradio-container, .gr-block, .gr-panel, .gr-column, .gr-row, .gr-box, .gr-form, .gr-input, .gr-dropdown, .gr-group, .gr-accordion, .gr-acc-panel {
-  background: #fff !important;
-  color: #22577a !important;
-  border-radius: 18px !important;
-  box-shadow: 0 2px 16px rgba(67,164,224,0.10) !important;
-  border: 1.5px solid #e0f3ff !important;
-  padding: 1.2em !important;
+  background: #ffffff !important; /* Pure white background for blocks */
+  color: #1a3e63 !important;
+  border-radius: 16px !important; /* Slightly rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 50, 100, 0.08) !important; /* Softer, wider shadow */
+  border: 1px solid #cce7ff !important; /* Light blue border */
+  padding: 1.5em !important;
 }
-/* Labels and headings */
+
+/* Labels and Headings */
 .gr-label, label, .gr-dropdown label, .gr-input label, .gr-markdown, .gr-markdown *, .prose, .prose *, h1, h2, h3, h4, h5, h6 {
-  color: #22577a !important;
+  color: #1a3e63 !important; /* Dark blue for labels */
   background: transparent !important;
   font-weight: 600 !important;
   font-size: 1.1em !important;
   border: none !important;
   padding: 0.2em 0.8em 0.2em 0 !important;
 }
-/* Inputs and dropdowns */
+
+/* Inputs and Dropdowns */
 input, select, textarea, .gr-input input, .gr-input select, .gr-input textarea, .gr-dropdown select {
-  border: 1.5px solid #43a4e0 !important;
-  border-radius: 8px !important;
-  padding: 0.5em 1em !important;
+  border: 1.5px solid #82c2f0 !important; /* Medium blue border */
+  border-radius: 10px !important;
+  padding: 0.6em 1.2em !important;
   font-size: 1em !important;
-  background: #e0f3ff !important;
-  color: #22577a !important;
-  transition: border 0.2s;
+  background: #f8fcff !important; /* Very light blue background for inputs */
+  color: #1a3e63 !important;
+  transition: border 0.3s, box-shadow 0.3s;
   box-shadow: none !important;
 }
 input:focus, select:focus, textarea:focus {
-  border-color: #2563eb !important;
+  border-color: #007bff !important; /* Bright blue on focus */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25) !important; /* Light glow on focus */
   outline: none !important;
 }
+
 /* Buttons */
 .gr-button, button, .copy-btn {
-  background: #2563eb !important;
-  color: #fff !important;
-  border-radius: 10px !important;
+  background: #007bff !important; /* Primary blue for buttons */
+  color: #ffffff !important;
+  border-radius: 12px !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(67,164,224,0.10) !important;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2) !important;
   border: none !important;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+  padding: 0.7em 1.5em !important; /* Consistent padding */
 }
 .gr-button:hover, button:hover, .copy-btn:hover {
-  background: #43a4e0 !important;
-  color: #fff !important;
-  box-shadow: 0 4px 16px rgba(67,164,224,0.15) !important;
+  background: #0056b3 !important; /* Darker blue on hover */
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3) !important;
+  transform: translateY(-2px); /* Slight lift on hover */
 }
-/* Chips */
+
+/* Chips (for custom attributes or similar) */
 .chip {
   display: inline-block;
-  background: #e0f3ff !important;
-  color: #22577a !important;
-  border-radius: 16px !important;
-  padding: 0.3rem 1rem !important;
-  margin: 0.2rem 0.3rem 0.2rem 0 !important;
-  font-size: 1rem !important;
+  background: #e0f0ff !important; /* Lighter blue for chips */
+  color: #1a3e63 !important;
+  border-radius: 20px !important; /* More rounded chips */
+  padding: 0.4rem 1.2rem !important;
+  margin: 0.3rem 0.4rem 0.3rem 0 !important;
+  font-size: 0.95rem !important;
   font-weight: 500 !important;
-  box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
+  box-shadow: 0 2px 10px rgba(0, 50, 100, 0.05) !important;
   opacity: 1;
   animation: chipIn 0.4s cubic-bezier(.4,2,.6,1) both;
+  border: 1px solid #cce7ff !important; /* Border for chips */
 }
 @keyframes chipIn {
   0% { opacity: 0; transform: scale(0.7) translateY(10px);}
   100% { opacity: 1; transform: scale(1) translateY(0);}
 }
+
+/* Main Heading */
 .main-heading {
   text-align: center;
-  font-size: 3.8em;
+  font-size: 3.2em; /* Slightly smaller main heading */
   font-weight: 700;
-  margin-top: 1.2em;
-  margin-bottom: 0.5em;
-  color: #22577a;
-  letter-spacing: 0.01em;
+  margin-top: 1em;
+  margin-bottom: 0.8em;
+  color: #0056b3; /* A strong blue for the main title */
+  letter-spacing: 0.02em;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
 }
-/* Section headings and labels */
+
+/* Section Headings and Labels */
 .gr-markdown h2, .gr-markdown h3, .gr-markdown h4, .gr-markdown h5, .gr-markdown h6,
 .gr-label, label, .gr-dropdown label, .gr-input label {
-  font-size: 1.35em !important;
+  font-size: 1.2em !important; /* Consistent section heading size */
   font-weight: 600 !important;
-  color: #22577a !important;
+  color: #1a3e63 !important;
   background: transparent !important;
   border: none !important;
   padding: 0.2em 0.8em 0.2em 0 !important;
 }
+
 /* Normal text and instructions */
 .gr-markdown, .gr-markdown *, .prose, .prose *, p, li {
   font-size: 1em !important;
-  color: #22577a !important;
+  color: #335d8a !important; /* Slightly lighter blue for body text */
   background: transparent !important;
+  line-height: 1.6; /* Improved readability */
 }
+
 /* Make Gradio progress/status text and bar clearly visible */
 .gr-progress-status, .gr-progress-bar, .gr-progress-bar * {
-  color: #22577a !important;
-  font-weight: 700 !important;
-  font-size: 1.1em !important;
-  background: #e0f3ff !important;
+  color: #007bff !important;
+  font-weight: 600 !important;
+  font-size: 1em !important;
+  background: #e0f0ff !important;
   border-radius: 8px !important;
+  padding: 0.5em 1em;
 }
+
+/* Specific styling for the prompt preview textboxes */
+#prompt-preview textarea, #enhanced-prompt textarea {
+    background-color: #f0f7ff !important; /* Very light blue for prompt output */
+    border: 1px dashed #a0d0ff !important; /* Dashed border for distinction */
+    min-height: 80px; /* Ensure sufficient height */
+    overflow-y: auto; /* Enable scrolling if content is long */
+}
+
+/* Image generation note */
+#image-gen-note {
+    color: #0056b3 !important;
+    font-style: italic;
+    font-size: 0.9em;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
 </style>
 <div class="glow-overlay"></div>
 <script>
@@ -210,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   setTimeout(() => {
     document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, strong, em, .gr-markdown, .prose, .gr-block, .gradio-container').forEach(el => {
-      el.style.color = "#22577a";
+      el.style.color = "#1a3e63"; /* Ensure text color after dynamic styles load */
     });
   }, 1000);
 });
@@ -220,29 +257,31 @@ document.addEventListener("DOMContentLoaded", function() {
 # Add chip CSS for button styling
 chip_css = '''
 <style>
+/* Chip buttons for custom attributes */
 [id^=chip-btn-] {
   display: inline-block !important;
-  background: rgba(255,255,255,0.7) !important;
-  border-radius: 16px !important;
-  color: #22577a !important;
-  font-size: 1rem !important;
+  background: #e0f0ff !important; /* Lighter blue for chip buttons */
+  border-radius: 20px !important;
+  color: #1a3e63 !important;
+  font-size: 0.95rem !important;
   font-weight: 500 !important;
-  margin: 0.2rem 0.3rem 0.2rem 0 !important;
-  padding: 0.3rem 1rem !important;
-  border: none !important;
-  box-shadow: 0 1px 8px rgba(67,164,224,0.10) !important;
+  margin: 0.3rem 0.4rem 0.3rem 0 !important;
+  padding: 0.4rem 1.2rem !important;
+  border: 1px solid #cce7ff !important; /* Border for chip buttons */
+  box-shadow: 0 2px 10px rgba(0, 50, 100, 0.05) !important;
   cursor: pointer !important;
   transition: background 0.3s, box-shadow 0.3s, transform 0.2s, opacity 0.3s;
 }
 [id^=chip-btn-]:hover {
-  background: #e0f3ff !important;
-  color: #43a4e0 !important;
-  transform: scale(1.05);
+  background: #cce7ff !important; /* Slightly darker blue on hover */
+  color: #0056b3 !important;
+  transform: scale(1.03); /* Subtle scale on hover */
+  box-shadow: 0 4px 15px rgba(0, 50, 100, 0.1) !important;
 }
 </style>
 '''
 
-# Helper to return gr.Button.update objects for chip buttons
+# Helper to return gr.Button.update objects for chip buttons (Not used in this version as custom_attr_list is a List component)
 MAX_CHIPS = 10
 
 def get_chip_btns_updates(custom_attributes):
@@ -270,16 +309,21 @@ def generate_image(prompt):
     image = pipe(prompt=prompt, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
     return image
 
-with gr.Blocks(theme="default", css="body { font-family: 'Segoe UI', 'Roboto', sans-serif; }") as demo:
-    gr.HTML(custom_html)
+# Use gr.Themes.Soft() as the base theme
+with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
     gr.HTML('<div class="main-heading">AI Image Prompt Generator 🎨</div>')
     with gr.Row():
-        gr.Markdown("""#Create creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
+        gr.Markdown("""# Create creative prompts for AI text-to-image models!
+        Welcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
     with gr.Row():
         with gr.Column():
-            gr.Markdown("""**How to use:**\n1. Choose or randomize options for each category (or add your own).\n2. See your prompt update live below.\n3. Click 'Copy Prompt' to use it elsewhere!""")
+            gr.Markdown("""**How to use:**
+1. Choose or randomize options for each category (or add your own).
+2. See your prompt update live below.
+3. Click 'Copy Prompt' to use it elsewhere!""")
         with gr.Column():
-            pass
+            pass # Empty column for layout balance
+
     with gr.Row():
         style = gr.Dropdown(choices=styles, multiselect=True, label="Style")
         subject = gr.Dropdown(choices=subjects, multiselect=True, label="Subject")
@@ -294,39 +338,46 @@ with gr.Blocks(theme="default", css="body { font-family: 'Segoe UI', 'Roboto', s
         artist_sel = gr.Dropdown(choices=artists, multiselect=True, label="Artist")
     color_sel = gr.Dropdown(choices=colors, multiselect=True, label="Color/Lighting")
 
-    gr.Markdown("---\n#### 2. Add any extra custom attributes:")
+    gr.Markdown("---")
+    gr.Markdown("#### 2. Add any extra custom attributes:")
     with gr.Row():
         custom_attr = gr.Textbox(label="Add custom attribute (anything not covered above)", placeholder="Type and press Enter to add", interactive=True)
-        custom_attributes = gr.State([])
         add_btn = gr.Button("Add Attribute")
-    custom_attr_list = gr.List(label="Custom Attributes", value=[], interactive=True)
+    custom_attr_list = gr.List(label="Custom Attributes", value=[], interactive=True) # Changed from gr.State to gr.List
 
-    def add_custom_attribute(custom_attr, custom_attr_list):
-        # Ensure each entry is a list of one string, and avoid duplicates
-        if custom_attr and [custom_attr] not in custom_attr_list:
-            custom_attr_list = custom_attr_list + [[custom_attr]]
-        return custom_attr_list, ""
+    def add_custom_attribute(custom_attr_input, current_custom_attr_list):
+        if custom_attr_input and [custom_attr_input] not in current_custom_attr_list:
+            current_custom_attr_list = current_custom_attr_list + [[custom_attr_input]]
+        return current_custom_attr_list, ""
 
     add_btn.click(add_custom_attribute, [custom_attr, custom_attr_list], [custom_attr_list, custom_attr])
     custom_attr.submit(add_custom_attribute, [custom_attr, custom_attr_list], [custom_attr_list, custom_attr])
-    custom_attr_list.change(lambda l: l, [custom_attr_list], [custom_attr_list])
+    
+    # This change event is crucial for custom_attr_list to reflect updates and trigger prompt generation
+    custom_attr_list.change(
+        generate_prompt,
+        [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attr_list],
+        [prompt]
+    )
 
-    gr.Markdown("---\n#### 3. Your generated prompt:")
+    gr.Markdown("---")
+    gr.Markdown("#### 3. Your generated prompt:")
     # Prompt Preview row
     with gr.Row():
-        prompt = gr.Textbox(label="Prompt Preview", interactive=False, elem_id="prompt-preview", scale=8)
+        prompt = gr.Textbox(label="Prompt Preview", interactive=False, elem_id="prompt-preview", scale=8, lines=3)
         copy_prompt_btn = gr.Button("📋", elem_classes=["copy-btn"], scale=1)
         copy_prompt_btn.click(copy_to_clipboard, inputs=prompt, outputs=None, show_progress=False)
     # Enhanced Prompt row
     with gr.Row():
-        enhanced_prompt = gr.Textbox(label="Enhanced Prompt", interactive=False, elem_id="enhanced-prompt", scale=8)
+        enhanced_prompt = gr.Textbox(label="Enhanced Prompt (powered by Gemini)", interactive=False, elem_id="enhanced-prompt", scale=8, lines=3)
         copy_enhanced_btn = gr.Button("📋", elem_classes=["copy-btn"], scale=1)
         copy_enhanced_btn.click(copy_to_clipboard, inputs=enhanced_prompt, outputs=None, show_progress=False)
-    refine_btn = gr.Button("Refine Prompt 🪄")
+    refine_btn = gr.Button("Refine Prompt with Gemini 🪄", variant="secondary") # Changed variant
     refine_btn.click(enhance_prompt_with_gemini, [prompt], [enhanced_prompt])
 
     # --- Image Generation Section ---
-    gr.Markdown("---\n#### 4. Generate image from your prompt:")
+    gr.Markdown("---")
+    gr.Markdown("#### 4. Generate image from your prompt:")
     gr.Markdown("_Note: Image generation generally takes 300-400 seconds. Please be patient!_", elem_id="image-gen-note")
     with gr.Row():
         generate_img_btn = gr.Button("Generate Image 🖼️", variant="primary")
@@ -334,7 +385,7 @@ with gr.Blocks(theme="default", css="body { font-family: 'Segoe UI', 'Roboto', s
     generate_img_btn.click(generate_image, inputs=prompt, outputs=img_output)
 
     # Live update prompt preview using .change() on all relevant components
-    for comp in [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attr_list]:
+    for comp in [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel]:
         comp.change(
             generate_prompt,
             [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attr_list],
