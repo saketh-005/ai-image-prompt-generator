@@ -170,6 +170,22 @@ input:focus, select:focus, textarea:focus {
   color: #22577a;
   letter-spacing: 0.01em;
 }
+/* Section headings and labels */
+.gr-markdown h2, .gr-markdown h3, .gr-markdown h4, .gr-markdown h5, .gr-markdown h6,
+.gr-label, label, .gr-dropdown label, .gr-input label {
+  font-size: 1.15em !important;
+  font-weight: 600 !important;
+  color: #22577a !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0.2em 0.8em 0.2em 0 !important;
+}
+/* Normal text and instructions */
+.gr-markdown, .gr-markdown *, .prose, .prose *, p, li {
+  font-size: 1em !important;
+  color: #22577a !important;
+  background: transparent !important;
+}
 /* Make Gradio progress/status text and bar clearly visible */
 .gr-progress-status, .gr-progress-bar, .gr-progress-bar * {
   color: #22577a !important;
