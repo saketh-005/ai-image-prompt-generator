@@ -170,6 +170,14 @@ input:focus, select:focus, textarea:focus {
   color: #22577a;
   letter-spacing: 0.01em;
 }
+/* Make Gradio progress/status text and bar clearly visible */
+.gr-progress-status, .gr-progress-bar, .gr-progress-bar * {
+  color: #22577a !important;
+  font-weight: 700 !important;
+  font-size: 1.1em !important;
+  background: #e0f3ff !important;
+  border-radius: 8px !important;
+}
 </style>
 <div class="glow-overlay"></div>
 <script>
