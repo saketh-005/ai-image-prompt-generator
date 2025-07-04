@@ -86,8 +86,8 @@ def copy_to_clipboard(text):
     except Exception as e:
         return f'Copy failed: {str(e)}'
 
-# --- Custom HTML/JS/CSS for animated background and chips ---
-custom_html = '''
+# --- Full Custom CSS for the Gradio App ---
+full_custom_css = '''
 <style>
 /* General Body and Container Styling */
 body {
@@ -112,17 +112,17 @@ body {
   color: #1a3e63 !important; /* Dark blue for labels */
   background: transparent !important;
   font-weight: 600 !important;
-  font-size: 1.1em !important; /* Adjusted font size */
+  font-size: 1.1em !important;
   border: none !important;
   padding: 0.2em 0.8em 0.2em 0 !important;
 }
 
-/* Inputs and Dropdowns */
+/* Inputs and Dropdowns (base styles) */
 input, select, textarea, .gr-input input, .gr-input select, .gr-input textarea, .gr-dropdown select {
   border: 1.5px solid #82c2f0 !important; /* Medium blue border */
   border-radius: 10px !important;
   padding: 0.6em 1.2em !important;
-  font-size: 1em !important; /* Adjusted font size */
+  font-size: 1em !important;
   background: #f8fcff !important; /* Very light blue background for inputs */
   color: #1a3e63 !important;
   transition: border 0.3s, box-shadow 0.3s;
@@ -159,7 +159,7 @@ input:focus, select:focus, textarea:focus {
   border-radius: 20px !important; /* More rounded chips */
   padding: 0.4rem 1.2rem !important;
   margin: 0.3rem 0.4rem 0.3rem 0 !important;
-  font-size: 0.95rem !important; /* Adjusted font size */
+  font-size: 0.95rem !important;
   font-weight: 500 !important;
   box-shadow: 0 2px 10px rgba(0, 50, 100, 0.05) !important;
   opacity: 1;
@@ -174,7 +174,7 @@ input:focus, select:focus, textarea:focus {
 /* Main Heading */
 .main-heading {
   text-align: center;
-  font-size: 3.2em; /* Adjusted font size */
+  font-size: 3.2em;
   font-weight: 700;
   margin-top: 1em;
   margin-bottom: 0.8em;
@@ -185,7 +185,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Section Headings and Labels */
 .gr-markdown h2, .gr-markdown h3, .gr-markdown h4, .gr-markdown h5, .gr-markdown h6 {
-  font-size: 1.2em !important; /* Consistent section heading size */
+  font-size: 1.2em !important;
   font-weight: 600 !important;
   color: #1a3e63 !important;
   background: transparent !important;
@@ -195,7 +195,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Normal text and instructions */
 .gr-markdown, .gr-markdown *, .prose, .prose *, p, li {
-  font-size: 1em !important; /* Adjusted font size */
+  font-size: 1em !important;
   color: #335d8a !important; /* Slightly lighter blue for body text */
   background: transparent !important;
   line-height: 1.6; /* Improved readability */
@@ -205,7 +205,7 @@ input:focus, select:focus, textarea:focus {
 .gr-progress-status, .gr-progress-bar, .gr-progress-bar * {
   color: #007bff !important;
   font-weight: 600 !important;
-  font-size: 1em !important; /* Adjusted font size */
+  font-size: 1em !important;
   background: #e0f0ff !important;
   border-radius: 8px !important;
   padding: 0.5em 1em;
@@ -223,7 +223,7 @@ input:focus, select:focus, textarea:focus {
 #image-gen-note {
     color: #0056b3 !important;
     font-style: italic;
-    font-size: 0.9em; /* Adjusted font size */
+    font-size: 0.9em;
     text-align: center;
     margin-top: 1em;
     margin-bottom: 0.5em;
@@ -265,6 +265,80 @@ input:focus, select:focus, textarea:focus {
     filter: invert(1); /* Invert color of spinner to make it visible on light background */
 }
 
+/* --- Fix for Dropdown Containers (new additions) --- */
+
+/* Target the core dropdown input area where selected items (chips) live */
+.gr-multiselect-input, .gr-dropdown-input {
+    background-color: #f8fcff !important; /* Very light blue background */
+    color: #1a3e63 !important; /* Dark text */
+    border: 1.5px solid #82c2f0 !important;
+    border-radius: 10px !important;
+    padding: 0.6em 1.2em !important;
+    /* Adjust padding for multi-select to look good with chips */
+    padding-top: 0.3em !important;
+    padding-bottom: 0.3em !important;
+    min-height: 38px; /* Ensure a consistent height even with no selections */
+}
+
+/* Style the selected chips within the dropdowns */
+.gr-multiselect-input .gradio-chip {
+    background-color: #e0f0ff !important; /* Lighter blue for selected chips */
+    color: #1a3e63 !important;
+    border-radius: 16px !important;
+    padding: 0.3rem 0.8rem !important;
+    margin: 0.2rem !important;
+    font-size: 0.9em !important;
+    border: 1px solid #cce7ff !important;
+    box-shadow: none !important; /* Remove chip shadow for consistency within dropdown */
+}
+
+/* Style the 'x' button on dropdown chips */
+.gr-multiselect-input .gradio-chip button {
+    background: transparent !important;
+    color: #007bff !important; /* Blue for the 'x' */
+    font-size: 1.1em !important;
+    padding: 0 0.2em !important;
+}
+.gr-multiselect-input .gradio-chip button:hover {
+    color: #0056b3 !important;
+    background: transparent !important;
+    transform: none !important; /* Prevent button specific transform on chip x */
+}
+
+
+/* Style the dropdown menu (the actual list of options) when it opens */
+/* This is often a global element, so be careful with specificity */
+.gr-options, .gr-options > div { /* Targeting the container for dropdown options */
+    background-color: #ffffff !important; /* White background for the dropdown menu */
+    border: 1px solid #cce7ff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 15px rgba(0, 50, 100, 0.1) !important;
+}
+
+/* Style individual items in the dropdown menu */
+.gr-option {
+    color: #1a3e63 !important;
+    padding: 0.8em 1.2em !important;
+    background-color: transparent !important; /* Ensure no default dark background */
+}
+
+.gr-option:hover {
+    background-color: #e0f0ff !important; /* Light blue on hover for dropdown options */
+    color: #0056b3 !important;
+}
+
+.gr-option.selected {
+    background-color: #cce7ff !important; /* Slightly darker blue for selected option */
+    color: #0056b3 !important;
+    font-weight: 600 !important;
+}
+
+/* Ensure the caret (down arrow) is visible */
+.gr-dropdown-caret {
+    color: #007bff !important; /* Blue caret */
+}
+
+
 </style>
 <div class="glow-overlay"></div>
 <script>
@@ -288,45 +362,6 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 '''
 
-# Add chip CSS for button styling
-chip_css = '''
-<style>
-/* Chip buttons for custom attributes */
-[id^=chip-btn-] {
-  display: inline-block !important;
-  background: #e0f0ff !important; /* Lighter blue for chip buttons */
-  border-radius: 20px !important;
-  color: #1a3e63 !important;
-  font-size: 0.95rem !important; /* Adjusted font size */
-  font-weight: 500 !important;
-  margin: 0.3rem 0.4rem 0.3rem 0 !important;
-  padding: 0.4rem 1.2rem !important;
-  border: 1px solid #cce7ff !important; /* Border for chip buttons */
-  box-shadow: 0 2px 10px rgba(0, 50, 100, 0.05) !important;
-  cursor: pointer !important;
-  transition: background 0.3s, box-shadow 0.3s, transform 0.2s, opacity 0.3s;
-}
-[id^=chip-btn-]:hover {
-  background: #cce7ff !important; /* Slightly darker blue on hover */
-  color: #0056b3 !important;
-  transform: scale(1.03); /* Subtle scale on hover */
-  box-shadow: 0 4px 15px rgba(0, 50, 100, 0.1) !important;
-}
-</style>
-'''
-
-# Helper to return gr.Button.update objects for chip buttons (Not used in this version as custom_attr_list is a List component)
-MAX_CHIPS = 10
-
-def get_chip_btns_updates(custom_attributes):
-    updates = []
-    for i in range(MAX_CHIPS):
-        if i < len(custom_attributes):
-            updates.append(gr.Button.update(value=custom_attributes[i] + "  ×", visible=True))
-        else:
-            updates.append(gr.Button.update(value="", visible=False))
-    return updates
-
 # --- Image generation pipeline setup ---
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model_repo_id = "stabilityai/sdxl-turbo"
@@ -337,14 +372,14 @@ else:
 pipe = DiffusionPipeline.from_pretrained(model_repo_id, torch_dtype=torch_dtype)
 pipe = pipe.to(device)
 
-def generate_image(prompt_text): # Renamed 'prompt' parameter to avoid conflict
+def generate_image(prompt_text):
     if not prompt_text or prompt_text.strip() == "":
         return None
     image = pipe(prompt=prompt_text, guidance_scale=0.0, num_inference_steps=2, width=1024, height=1024).images[0]
     return image
 
-# Use gr.Themes.Soft() as the base theme
-with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
+# Use gr.Themes.Soft() as the base theme and apply the full custom CSS
+with gr.Blocks(theme=gr.themes.Soft(), css=full_custom_css) as demo:
     gr.HTML('<div class="main-heading">AI Image Prompt Generator 🎨</div>')
     with gr.Row():
         gr.Markdown("""# Create creative prompts for AI text-to-image models!
@@ -378,7 +413,6 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
     with gr.Row():
         custom_attr = gr.Textbox(label="Add custom attribute (anything not covered above)", placeholder="Type and press Enter to add", interactive=True)
         add_btn = gr.Button("Add Attribute")
-    # The gr.List component itself, and its items, need specific styling
     custom_attr_list = gr.List(label="Custom Attributes", value=[], interactive=True)
 
     gr.Markdown("---")
@@ -399,7 +433,6 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
     gr.Markdown("_Note: Image generation generally takes 300-400 seconds. Please be patient!_", elem_id="image-gen-note")
     with gr.Row():
         generate_img_btn = gr.Button("Generate Image 🖼️", variant="primary")
-    # The gr.Image component needs specific styling for its background
     img_output = gr.Image(label="Generated Image", show_label=True)
 
     # --- Attach all event listeners AFTER all components are defined ---
@@ -416,7 +449,6 @@ with gr.Blocks(theme=gr.themes.Soft(), css=custom_html + chip_css) as demo:
     copy_enhanced_btn.click(copy_to_clipboard, inputs=enhanced_prompt, outputs=None, show_progress=False)
     refine_btn.click(enhance_prompt_with_gemini, [prompt], [enhanced_prompt])
     generate_img_btn.click(generate_image, inputs=prompt, outputs=img_output)
-
 
     # Live update prompt preview using .change() on all relevant components
     for comp in [style, subject, mood, clothing_sel, prop_sel, pose_sel, setting_sel, scene_sel, artist_sel, color_sel, custom_attr_list]:
