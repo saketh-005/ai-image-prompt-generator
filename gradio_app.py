@@ -163,7 +163,7 @@ input:focus, select:focus, textarea:focus {
 }
 .main-heading {
   text-align: center;
-  font-size: 2.4em;
+  font-size: 3.2em;
   font-weight: 700;
   margin-top: 1.2em;
   margin-bottom: 0.5em;
@@ -258,7 +258,7 @@ with gr.Blocks(theme="default", css="body { font-family: 'Segoe UI', 'Roboto', s
     gr.HTML(custom_html)
     gr.HTML('<div class="main-heading">AI Image Prompt Generator 🎨</div>')
     with gr.Row():
-        gr.Markdown("""# AI Image Prompt Generator 🎨\nCreate creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
+        gr.Markdown("""#Create creative prompts for AI text-to-image models!\n\nWelcome! Build your perfect prompt step by step. Select or add options below, and copy your prompt to use in your favorite AI image tool.""")
     with gr.Row():
         with gr.Column():
             gr.Markdown("""**How to use:**\n1. Choose or randomize options for each category (or add your own).\n2. See your prompt update live below.\n3. Click 'Copy Prompt' to use it elsewhere!""")
