@@ -7,6 +7,7 @@ from google import genai
 from google.genai import types
 import torch
 from diffusers import DiffusionPipeline
+import gradio as gr
 
 # Helper to get combined styles
 styles = prompt_data.get("DRAWING STYLES", []) + prompt_data.get("VISUAL STYLES", [])
